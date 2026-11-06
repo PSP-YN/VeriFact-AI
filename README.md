@@ -1,46 +1,78 @@
 # VeriFact AI
 
-A claim-level freshness and verification layer for AI-generated answers. The system is designed to flag potentially stale claims, retrieve current evidence through Tavily, and present claim-level verdicts with citations.
+A claim-level freshness and verification layer for AI-generated answers. It identifies potentially time-sensitive claims, retrieves current evidence with Tavily, and uses Bifrost to assess evidence when configured.
 
-> Early development — initial scaffold. The app must not invent sources, claim certainty without evidence, or present freshness as a calibrated probability before validation.
+> Hackathon MVP in active development. Verdicts and model-generated freshness/confidence scores are uncalibrated assessments, not truth guarantees.
 
-## Hackathon
+## Current implementation
 
-Geek Room Global AI Hackathon — Tavily Track: “Build a Stale-Answer Detector for AI Applications.”
+- FastAPI backend and browser dashboard
+- Sentence/line-level claim splitting
+- Tavily Search API evidence retrieval
+- Source title, URL, snippet, relevance score, publication date and retrieval timestamp
+- Temporal-sensitivity heuristic
+- Bifrost OpenAI-compatible model assessment
+- Evidence-only fallback when Bifrost is not configured
+- Validation of verdict and score fields
+- Pytest and GitHub Actions CI
 
-## Planned stack
+## Quick start
 
-- Python 3.12+
-- FastAPI
-- Tavily Search API for live evidence retrieval
-- Bifrost gateway for model-provider routing
-- Pydantic schemas
-- Pytest
-
-## Local development
+Requirements: Python 3.12+, a Tavily API key, and optionally a Bifrost gateway/model.
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
+# Edit .env and add your Tavily key; configure Bifrost if desired.
 uvicorn app.main:app --reload
 ```
 
-## Principles
+Open http://localhost:8000 for the dashboard and http://localhost:8000/docs for API docs.
 
-- Split answers into independently reviewable claims.
-- Treat temporal validity separately from general truth.
-- Attach source URLs and retrieval timestamps to evidence.
-- Distinguish supported, contradicted, inconclusive, and not-checked claims.
-- Never store secrets in Git.
-- Do not claim the Tavily/Bifrost integration works until credentials and end-to-end tests verify it.
+## Environment
+
+```env
+TAVILY_API_KEY=your_tavily_key
+BIFROST_BASE_URL=http://localhost:8080
+BIFROST_API_KEY=your_bifrost_virtual_key_if_required
+BIFROST_MODEL=provider/model-route
+```
+
+Keep actual keys in your local `.env`; never commit them.
+
+## API
+
+- `GET /health` — service and configuration status
+- `POST /api/v1/verify` — claim extraction, Tavily search, and optional Bifrost assessment
+
+Example:
+
+```json
+{
+  "answer": "The latest version of Example API is v3. Example pricing is $10/month.",
+  "max_results_per_claim": 5
+}
+```
+
+## Important limitations
+
+- Claim splitting is currently sentence/line based; it is not semantic atomic-claim extraction yet.
+- Tavily relevance is not proof of claim truth.
+- Bifrost assessments and score outputs are not calibrated against a ground-truth dataset yet.
+- Evidence publication dates may be absent; the system must not silently treat retrieval time as publication time.
+- Current UI displays the sources returned for each claim and the assessment status.
 
 ## Roadmap
 
-1. Claim extraction and typed verification response
-2. Tavily evidence retrieval
-3. Freshness classification and transparent scoring
-4. Bifrost model routing
-5. Evaluation dataset and test suite
-6. Frontend and deployment
+1. Add a curated benchmark of current vs stale claims
+2. Improve atomic claim extraction and temporal fact types
+3. Implement source authority, contradiction handling and source diversity
+4. Calibrate freshness score against ground-truth examples
+5. Add response caching, rate limits and multi-claim parallelism
+6. Validate end-to-end behavior with live Tavily and Bifrost keys
+
+## Hackathon
+
+Geek Room Global AI Hackathon — Tavily Track: “Build a Stale-Answer Detector for AI Applications.”
