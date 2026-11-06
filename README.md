@@ -14,6 +14,9 @@ A claim-level freshness and verification layer for AI-generated answers. It iden
 - Bifrost OpenAI-compatible model assessment
 - Evidence-only fallback when Bifrost is not configured
 - Validation of verdict and score fields
+- Human-labeled evaluation metrics (accuracy, macro-F1, coverage, freshness MAE) and CLI evaluator
+- Request cap of 12 claims to control external API usage
+- HTTP(S)-only source-link validation
 - Pytest and GitHub Actions CI
 
 ## Quick start
