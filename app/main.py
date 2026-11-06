@@ -9,6 +9,8 @@ from pydantic import BaseModel, Field
 from app.verify import extract_claims, initial_temporal_label, search_evidence
 from app.verifier import BifrostVerificationError, assess_claim
 
+MAX_CLAIMS_PER_REQUEST = 12
+
 app = FastAPI(
     title="VeriFact AI",
     version="0.1.0",
@@ -42,6 +44,11 @@ async def verify_answer(request: VerifyRequest):
     claims = extract_claims(request.answer)
     if not claims:
         raise HTTPException(status_code=422, detail="No verifiable claims found in answer")
+    if len(claims) > MAX_CLAIMS_PER_REQUEST:
+        raise HTTPException(
+            status_code=413,
+            detail=f"Answer split into {len(claims)} claims. Limit is {MAX_CLAIMS_PER_REQUEST} per request; shorten or split the answer.",
+        )
 
     results = []
     assessed_count = 0
