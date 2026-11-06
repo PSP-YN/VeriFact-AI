@@ -7,7 +7,7 @@ A claim-level freshness and verification layer for AI-generated answers. It iden
 ## Current implementation
 
 - FastAPI backend and browser dashboard
-- Sentence/line-level claim splitting
+- Bifrost-based atomic claim extraction with sentence/line fallback
 - Tavily Search API evidence retrieval
 - Source title, URL, snippet, relevance score, publication date and retrieval timestamp
 - Temporal-sensitivity heuristic
@@ -61,7 +61,7 @@ Example:
 
 ## Important limitations
 
-- Claim splitting is currently sentence/line based; it is not semantic atomic-claim extraction yet.
+- When Bifrost is configured, claim decomposition uses the selected model; without it or on extractor failure, the app falls back to sentence/line splitting.
 - Tavily relevance is not proof of claim truth.
 - Bifrost assessments and score outputs are not calibrated against a ground-truth dataset yet.
 - Evidence publication dates may be absent; the system must not silently treat retrieval time as publication time.
