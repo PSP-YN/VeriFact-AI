@@ -97,3 +97,8 @@ Set these values in Vercel Project Settings → Environment Variables. Never com
 - `BIFROST_BASE_URL`: reachable gateway URL. **Do not use localhost** for Vercel because it refers to the serverless runtime.
 - `BIFROST_API_KEY`: inference key if required by the gateway.
 - `BIFROST_MODEL`: configured Bifrost model route.
+
+
+## Privacy
+
+The answer text is sent to the configured Bifrost model for claim extraction when enabled. Extracted claims are sent to Tavily for search, and claim/evidence text is sent to Bifrost for assessment. Avoid submitting confidential or personal information. The app does not persist answer history in a database in this MVP; provider logging follows the configured service policies.
