@@ -18,9 +18,10 @@ See [`docs/architecture.md`](docs/architecture.md) for the verification pipeline
 - Bifrost OpenAI-compatible model assessment
 - Evidence-only fallback when Bifrost is not configured
 - Validation of verdict and score fields
-- Human-labeled evaluation metrics (accuracy, macro-F1, coverage, freshness MAE) and CLI evaluator
+- Human-labeled evaluation metrics (accuracy, macro-F1, coverage, freshness MAE)
 - Request cap of 12 claims to control external API usage
 - HTTP(S)-only source-link validation
+- Baseline security headers and `no-store` for API responses
 - Pytest and GitHub Actions CI
 
 ## Quick start
@@ -37,6 +38,16 @@ uvicorn app.main:app --reload --env-file .env
 ```
 
 Open http://localhost:8000 for the dashboard and http://localhost:8000/docs for API docs.
+
+## Tests
+
+Run the automated test suite locally:
+
+```bash
+pytest -q
+```
+
+GitHub Actions runs the test suite on pushes and pull requests to `main`.
 
 ## Environment
 
@@ -73,7 +84,8 @@ See [`docs/demo-script.md`](docs/demo-script.md) for the official Node.js 18 EOL
 - Tavily relevance is not proof of claim truth.
 - Bifrost assessments and score outputs are not calibrated against a ground-truth dataset yet.
 - Evidence publication dates may be absent; the system must not silently treat retrieval time as publication time.
-- Current UI displays the sources returned for each claim and the assessment status.
+- This MVP does not yet implement production-grade distributed rate limiting, durable job processing, or benchmark-backed score calibration.
+- The UI displays sources returned for each claim and the assessment status.
 
 ## Roadmap
 
@@ -81,13 +93,12 @@ See [`docs/demo-script.md`](docs/demo-script.md) for the official Node.js 18 EOL
 2. Improve atomic claim extraction and temporal fact types
 3. Implement source authority, contradiction handling and source diversity
 4. Calibrate freshness score against ground-truth examples
-5. Add response caching, rate limits and multi-claim parallelism
+5. Add distributed rate limits, caching, retries, and multi-claim concurrency
 6. Validate end-to-end behavior with live Tavily and Bifrost keys
 
 ## Hackathon
 
 Geek Room Global AI Hackathon — Tavily Track: “Build a Stale-Answer Detector for AI Applications.”
-
 
 ## Vercel environment
 
@@ -97,7 +108,6 @@ Set these values in Vercel Project Settings → Environment Variables. Never com
 - `BIFROST_BASE_URL`: reachable gateway URL. **Do not use localhost** for Vercel because it refers to the serverless runtime.
 - `BIFROST_API_KEY`: inference key if required by the gateway.
 - `BIFROST_MODEL`: configured Bifrost model route.
-
 
 ## Privacy
 
