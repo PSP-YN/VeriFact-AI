@@ -9,6 +9,7 @@ import os
 import re
 from datetime import datetime, timezone
 from typing import Any
+from urllib.parse import urlparse
 
 import httpx
 
@@ -17,6 +18,16 @@ def extract_claims(answer: str) -> list[str]:
     """Split a supplied answer into reviewable sentence/line units."""
     pieces = re.split(r"(?<=[.!?])\s+|\n+", answer.strip())
     return [piece.strip(" •-*\t") for piece in pieces if piece.strip(" •-*\t")]
+
+
+def safe_source_url(value: Any) -> str | None:
+    """Allow only absolute HTTP(S) URLs in evidence links."""
+    if not isinstance(value, str):
+        return None
+    parsed = urlparse(value.strip())
+    if parsed.scheme not in {"http", "https"} or not parsed.netloc:
+        return None
+    return value.strip()
 
 
 async def search_evidence(claim: str, max_results: int = 5) -> list[dict[str, Any]]:
@@ -44,7 +55,7 @@ async def search_evidence(claim: str, max_results: int = 5) -> list[dict[str, An
     for item in payload.get("results", []):
         evidence.append({
             "title": item.get("title"),
-            "url": item.get("url"),
+            "url": safe_source_url(item.get("url")),
             "snippet": item.get("content"),
             "source_score": item.get("score"),
             "published_date": item.get("published_date"),
