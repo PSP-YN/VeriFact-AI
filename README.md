@@ -4,6 +4,15 @@ A claim-level freshness and verification layer for AI-generated answers. It iden
 
 > Hackathon MVP in active development. Verdicts and model-generated freshness/confidence scores are uncalibrated assessments, not truth guarantees.
 
+## Live deployment
+
+- **Dashboard:** https://veri-fact-ai.vercel.app/ui/
+- **Health:** https://veri-fact-ai.vercel.app/health
+- **API docs:** https://veri-fact-ai.vercel.app/docs
+- **OpenAPI:** https://veri-fact-ai.vercel.app/openapi.json
+
+The deployment responds, but external provider credentials must be configured in Vercel before live claim verification can work. Check the health response for `tavily_configured` and `bifrost_configured`; both should be `true` for the full demo.
+
 ## Architecture
 
 See [`docs/architecture.md`](docs/architecture.md) for the verification pipeline and evaluation flow.
@@ -108,6 +117,8 @@ Set these values in Vercel Project Settings → Environment Variables. Never com
 - `BIFROST_BASE_URL`: reachable gateway URL. **Do not use localhost** for Vercel because it refers to the serverless runtime.
 - `BIFROST_API_KEY`: inference key if required by the gateway.
 - `BIFROST_MODEL`: configured Bifrost model route.
+
+After setting or changing environment variables, redeploy and confirm `/health` reports both providers configured. Environment values are not shown by health endpoint.
 
 ## Privacy
 
