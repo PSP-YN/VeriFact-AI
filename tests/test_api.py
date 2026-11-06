@@ -9,6 +9,16 @@ def test_health_endpoint():
     response = client.get("/health")
     assert response.status_code == 200
     assert response.json()["service"] == "VeriFact AI"
+    assert response.headers["x-content-type-options"] == "nosniff"
+    assert response.headers["x-frame-options"] == "DENY"
+    assert response.headers["referrer-policy"] == "strict-origin-when-cross-origin"
+
+
+def test_api_responses_are_not_cached():
+    response = client.get("/health")
+    assert response.status_code == 200
+    # Health is public metadata; the API verification endpoint is explicitly no-store.
+    assert response.headers["x-content-type-options"] == "nosniff"
 
 
 def test_verify_endpoint_with_mocked_external_services(monkeypatch):
@@ -30,6 +40,7 @@ def test_verify_endpoint_with_mocked_external_services(monkeypatch):
     monkeypatch.setattr("app.main.assess_claim", fake_assess)
     response = client.post("/api/v1/verify", json={"answer": "The latest version is v2."})
     assert response.status_code == 200
+    assert response.headers["cache-control"] == "no-store"
     payload = response.json()
     assert payload["claim_count"] == 1
     assert payload["claims"][0]["verdict"] == "supported"
