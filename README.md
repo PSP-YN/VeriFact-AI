@@ -15,7 +15,7 @@ The deployment responds, but external provider credentials must be configured in
 
 ## Architecture
 
-See [`docs/architecture.md`](docs/architecture.md) for the verification pipeline and evaluation flow.
+See [`docs/architecture.md`](docs/architecture.md) for the verification pipeline and evaluation flow. For the secured local Bifrost demo gateway, see [`docs/BIFROST_GATEWAY.md`](docs/BIFROST_GATEWAY.md).
 
 ## Current implementation
 
