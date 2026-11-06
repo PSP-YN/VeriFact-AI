@@ -40,3 +40,21 @@ def test_verify_rejects_more_than_twelve_claims():
     answer = " ".join(f"Claim {index}." for index in range(13))
     response = client.post("/api/v1/verify", json={"answer": answer})
     assert response.status_code == 413
+
+
+def test_failed_bifrost_assessment_is_not_counted_as_assessed(monkeypatch):
+    async def fake_search(claim, max_results=5):
+        return []
+
+    async def failed_assess(claim, evidence):
+        from app.verifier import BifrostVerificationError
+        raise BifrostVerificationError("simulated bad response")
+
+    monkeypatch.setattr("app.main.search_evidence", fake_search)
+    monkeypatch.setattr("app.main.assess_claim", failed_assess)
+    response = client.post("/api/v1/verify", json={"answer": "The latest version is v2."})
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["verification_status"] == "evidence_only"
+    assert payload["assessed_claim_count"] == 0
+    assert payload["claims"][0]["verdict"] == "inconclusive"
