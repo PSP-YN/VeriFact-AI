@@ -76,7 +76,8 @@ def test_evaluation_metrics_and_freshness_mae():
     assert metrics["sample_count"] == 3
     assert metrics["accuracy"] == pytest.approx(2 / 3, abs=0.0001)
     assert metrics["coverage"] == pytest.approx(2 / 3, abs=0.0001)
-    assert metrics["freshness_mae"] == 10
+    # Only the two labeled examples count: absolute errors 10 and 0 => MAE 5.
+    assert metrics["freshness_mae"] == 5
     assert metrics["freshness_mae_sample_count"] == 2
 
 
