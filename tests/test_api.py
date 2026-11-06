@@ -5,20 +5,13 @@ from app.main import app
 client = TestClient(app)
 
 
-def test_health_endpoint():
+def test_health_endpoint_and_security_headers():
     response = client.get("/health")
     assert response.status_code == 200
     assert response.json()["service"] == "VeriFact AI"
     assert response.headers["x-content-type-options"] == "nosniff"
     assert response.headers["x-frame-options"] == "DENY"
     assert response.headers["referrer-policy"] == "strict-origin-when-cross-origin"
-
-
-def test_api_responses_are_not_cached():
-    response = client.get("/health")
-    assert response.status_code == 200
-    # Health is public metadata; the API verification endpoint is explicitly no-store.
-    assert response.headers["x-content-type-options"] == "nosniff"
 
 
 def test_verify_endpoint_with_mocked_external_services(monkeypatch):
