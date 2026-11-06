@@ -6,17 +6,17 @@ Use the UI's **Load example stale claim** button:
 
 > Node.js 18 is currently supported and receives security updates.
 
-This is intentionally outdated. The official Node.js EOL page lists Node.js 18 as End-of-Life (last updated March 27, 2025) and explains that EOL versions no longer receive project security updates.
+This is intentionally outdated. The official Node.js End-of-Life table lists Node.js 18 as EOL; its last listed update was March 27, 2025, and its EOL date is April 30, 2025. EOL releases no longer receive project security fixes.
 
 Source: https://nodejs.org/en/about/eol
 
-The demo is a retrieval-and-assessment example, not a precomputed answer. The actual verdict should be based on the live Tavily results and the selected Bifrost model.
+The demo is a retrieval-and-assessment example, not a precomputed answer. The actual verdict should be based on live Tavily results and the selected Bifrost model.
 
 ## Live demo steps
 
-1. Open the VeriFact dashboard.
-2. Load the example claim.
-3. Confirm the health indicator shows Tavily configured and Bifrost configured.
+1. Open the production dashboard: https://veri-fact-ai.vercel.app/ui/
+2. Confirm the health indicator shows Tavily configured and Bifrost configured. If either is unavailable, do not present verification as working; use the setup checklist first.
+3. Load the example claim.
 4. Click **Verify claims**.
 5. Show the claim extraction method and per-claim assessment.
 6. Open the official Node.js source link returned by Tavily.
