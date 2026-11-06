@@ -1,0 +1,13 @@
+[
+  {
+    "id": "nodejs18-eol-asof-2026-11-06",
+    "claim": "Node.js 18 is currently supported and receives security updates.",
+    "as_of": "2026-11-06T00:00:00Z",
+    "expected_verdict": "potentially_stale",
+    "source_urls": [
+      "https://nodejs.org/en/about/eol",
+      "https://nodejs.org/en/about/previous-releases"
+    ],
+    "expected_freshness_score": null
+  }
+]
