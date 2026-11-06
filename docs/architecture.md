@@ -13,7 +13,7 @@ flowchart TD
     E --> V[Bifrost claim assessment]
     V --> R[Verdict + freshness/confidence assessment]
     R --> UI[Claim report with citations]
-    D[Human-labeled dataset] --> EV[Evaluation script]
+    D[Human-labeled dataset] --> EV[Evaluation module + pytest suite]
     R --> EV
     EV --> M[Accuracy, macro-F1, coverage, freshness MAE]
 ```
@@ -39,4 +39,6 @@ Freshness and confidence scores are explicitly marked uncalibrated until a human
 
 ## Evaluation
 
-The CLI evaluator compares predictions to source-backed human labels. It reports accuracy, macro-F1, coverage, confusion matrix, per-class metrics, and freshness-score MAE where human scores exist. No accuracy claim is made from the single demo fixture.
+Evaluation metrics are implemented in the evaluation module and covered by pytest tests. The current repository does **not** provide a standalone CLI evaluator. Metrics include accuracy, macro-F1, coverage, confusion matrix, per-class metrics, and freshness-score MAE where human scores exist.
+
+No accuracy claim is made from the single demo fixture.
