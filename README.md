@@ -29,7 +29,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
 # Edit .env and add your Tavily key; configure Bifrost if desired.
-uvicorn app.main:app --reload
+uvicorn app.main:app --reload --env-file .env
 ```
 
 Open http://localhost:8000 for the dashboard and http://localhost:8000/docs for API docs.
