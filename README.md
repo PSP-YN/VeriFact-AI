@@ -83,3 +83,13 @@ See [`docs/demo-script.md`](docs/demo-script.md) for the official Node.js 18 EOL
 ## Hackathon
 
 Geek Room Global AI Hackathon — Tavily Track: “Build a Stale-Answer Detector for AI Applications.”
+
+
+## Vercel environment
+
+Set these values in Vercel Project Settings → Environment Variables. Never commit credentials:
+
+- `TAVILY_API_KEY`: Tavily search key.
+- `BIFROST_BASE_URL`: reachable gateway URL. **Do not use localhost** for Vercel because it refers to the serverless runtime.
+- `BIFROST_API_KEY`: inference key if required by the gateway.
+- `BIFROST_MODEL`: configured Bifrost model route.
