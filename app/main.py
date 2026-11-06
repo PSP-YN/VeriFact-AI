@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
 
-from app.verify import extract_claims, initial_temporal_label, search_evidence
+from app.verify import extract_atomic_claims, initial_temporal_label, search_evidence
 from app.verifier import BifrostVerificationError, assess_claim
 
 MAX_CLAIMS_PER_REQUEST = 12
@@ -41,7 +41,7 @@ def health():
 
 @app.post("/api/v1/verify")
 async def verify_answer(request: VerifyRequest):
-    claims = extract_claims(request.answer)
+    claims, claim_extraction_method = await extract_atomic_claims(request.answer)
     if not claims:
         raise HTTPException(status_code=422, detail="No verifiable claims found in answer")
     if len(claims) > MAX_CLAIMS_PER_REQUEST:
@@ -97,6 +97,7 @@ async def verify_answer(request: VerifyRequest):
     return {
         "claims": results,
         "claim_count": len(results),
+        "claim_extraction_method": claim_extraction_method,
         "verification_status": "model_assessed" if assessed_count else "evidence_only",
         "assessed_claim_count": assessed_count,
         "assessment_warning": "LLM verdicts and freshness scores are uncalibrated model assessments, not guarantees.",
