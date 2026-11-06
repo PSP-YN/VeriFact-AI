@@ -22,7 +22,7 @@ See [`docs/architecture.md`](docs/architecture.md) for the verification pipeline
 - FastAPI backend and browser dashboard
 - Bifrost-based atomic claim extraction with sentence/line fallback
 - Tavily Search API evidence retrieval
-- Source title, URL, snippet, relevance score, publication date and retrieval timestamp
+- Source title, URL, snippet, relevance score, publication date, retrieval timestamp, and conservative source-provenance hint
 - Temporal-sensitivity heuristic
 - Bifrost OpenAI-compatible model assessment
 - Evidence-only fallback when Bifrost is not configured
@@ -92,6 +92,7 @@ See [`docs/demo-script.md`](docs/demo-script.md) for the official Node.js 18 EOL
 - When Bifrost is configured, claim decomposition uses the selected model; without it or on extractor failure, the app falls back to sentence/line splitting.
 - Tavily relevance is not proof of claim truth.
 - Bifrost assessments and score outputs are not calibrated against a ground-truth dataset yet.
+- Source provenance labels are conservative domain heuristics, not proof that a source is authoritative for a particular claim.
 - Evidence publication dates may be absent; the system must not silently treat retrieval time as publication time.
 - This MVP does not yet implement production-grade distributed rate limiting, durable job processing, or benchmark-backed score calibration.
 - The UI displays sources returned for each claim and the assessment status.

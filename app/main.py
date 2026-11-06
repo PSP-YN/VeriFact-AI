@@ -104,15 +104,21 @@ async def verify_answer(request: VerifyRequest):
             "claim_id": f"claim-{index}",
             "claim": claim,
             "temporal_sensitivity": initial_temporal_label(claim),
+            "assessment_status": "failed" if assessment_failed else ("not_configured" if assessment.get("model") is None else "assessed"),
             **assessment,
             "evidence": evidence,
         })
 
+    verification_status = (
+        "model_assessed" if assessed_count == len(results)
+        else "partially_assessed" if assessed_count > 0
+        else "evidence_only"
+    )
     return {
         "claims": results,
         "claim_count": len(results),
         "claim_extraction_method": claim_extraction_method,
-        "verification_status": "model_assessed" if assessed_count else "evidence_only",
+        "verification_status": verification_status,
         "assessed_claim_count": assessed_count,
         "assessment_warning": "LLM verdicts and freshness scores are uncalibrated model assessments, not guarantees.",
     }

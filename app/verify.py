@@ -15,6 +15,38 @@ from urllib.parse import urlparse
 import httpx
 
 
+# Conservative allowlist: these domains are known first-party documentation or
+# project domains. This is a provenance hint, not a universal trust score.
+PRIMARY_SOURCE_DOMAINS = {
+    "nodejs.org", "python.org", "pypi.org", "npmjs.com", "developer.mozilla.org",
+    "w3.org", "ietf.org", "docs.github.com", "docs.gitlab.com",
+    "cloudflare.com", "vercel.com", "openai.com", "ai.google.dev",
+    "developers.google.com", "docs.aws.amazon.com", "aws.amazon.com",
+    "learn.microsoft.com", "microsoft.com", "kubernetes.io", "docs.docker.com",
+    "docker.com", "supabase.com", "tavily.com", "docs.getbifrost.ai", "getmaxim.ai",
+}
+
+
+def classify_source_authority(url: str | None) -> str:
+    """Return a conservative source-type hint; never treat it as proof of truth."""
+    if not url:
+        return "unclassified"
+    host = (urlparse(url).hostname or "").lower().rstrip(".")
+    if not host:
+        return "unclassified"
+    if any(host == domain or host.endswith("." + domain) for domain in PRIMARY_SOURCE_DOMAINS):
+        return "known_primary_source"
+    if host.endswith((".gov", ".gov.in", ".gov.uk", ".gouv.fr", ".gc.ca")):
+        return "government"
+    if host.endswith((".edu", ".edu.in", ".ac.in")):
+        return "academic"
+    return "unclassified"
+
+
+def _authority_rank(value: str) -> int:
+    return {"known_primary_source": 0, "government": 1, "academic": 2}.get(value, 3)
+
+
 def extract_claims(answer: str) -> list[str]:
     """Fallback splitter: split a supplied answer into sentence/line units."""
     pieces = re.split(r"(?<=[.!?])\s+|\n+", answer.strip())
@@ -126,7 +158,14 @@ async def search_evidence(claim: str, max_results: int = 5) -> list[dict[str, An
             "source_score": item.get("score"),
             "published_date": item.get("published_date"),
             "retrieved_at": retrieved_at,
+            "source_authority": classify_source_authority(safe_source_url(item.get("url"))),
         })
+    evidence.sort(
+        key=lambda item: (
+            _authority_rank(item["source_authority"]),
+            -(item.get("source_score") if isinstance(item.get("source_score"), (int, float)) else 0),
+        )
+    )
     return evidence
 
 

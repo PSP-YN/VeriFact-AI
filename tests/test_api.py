@@ -39,6 +39,8 @@ def test_verify_endpoint_with_mocked_external_services(monkeypatch):
     payload = response.json()
     assert payload["claim_count"] == 1
     assert payload["claims"][0]["verdict"] == "supported"
+    assert payload["claims"][0]["assessment_status"] == "assessed"
+    assert payload["verification_status"] == "model_assessed"
     assert payload["claims"][0]["freshness_score"] == 90
 
 
@@ -64,6 +66,38 @@ def test_failed_bifrost_assessment_is_not_counted_as_assessed(monkeypatch):
     assert payload["verification_status"] == "evidence_only"
     assert payload["assessed_claim_count"] == 0
     assert payload["claims"][0]["verdict"] == "inconclusive"
+    assert payload["claims"][0]["assessment_status"] == "failed"
+
+
+def test_partial_assessment_is_reported_explicitly(monkeypatch):
+    async def fake_search(claim, max_results=5):
+        return []
+
+    calls = 0
+    async def mixed_assess(claim, evidence):
+        nonlocal calls
+        calls += 1
+        if calls == 2:
+            from app.verifier import BifrostVerificationError
+            raise BifrostVerificationError("simulated provider timeout")
+        return {
+            "verdict": "supported",
+            "rationale": "Test assessment",
+            "freshness_score": 80,
+            "freshness_score_status": "model_assessment_uncalibrated",
+            "confidence": 0.7,
+            "confidence_status": "model_estimate_uncalibrated",
+            "model": "test-model",
+        }
+
+    monkeypatch.setattr("app.main.search_evidence", fake_search)
+    monkeypatch.setattr("app.main.assess_claim", mixed_assess)
+    response = client.post("/api/v1/verify", json={"answer": "Claim one is current. Claim two is also current."})
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["verification_status"] == "partially_assessed"
+    assert payload["assessed_claim_count"] == 1
+    assert [claim["assessment_status"] for claim in payload["claims"]] == ["assessed", "failed"]
 
 
 def test_evaluation_metrics_and_freshness_mae():

@@ -23,7 +23,7 @@ VeriFact AI combines Bifrost-based claim decomposition and evidence assessment w
 
 - Bifrost atomic claim extraction with sentence-splitting fallback
 - Tavily Search API evidence retrieval
-- Per-claim source URL, snippet, relevance score, publication date, and retrieval timestamp
+- Per-claim source URL, snippet, relevance score, publication date, retrieval timestamp, and conservative source-provenance hint
 - Bifrost evidence assessment
 - Supported / contradicted / potentially stale / inconclusive verdicts
 - Model-assessed freshness and confidence values with explicit uncalibrated status
@@ -49,7 +49,7 @@ https://github.com/PSP-YN/VeriFact-AI
 
 ## Hosted preview
 
-https://verifact-ai-pspyn.vercel.app (currently team SSO-protected; not yet a public judge link)
+https://veri-fact-ai.vercel.app (public production dashboard; verify judge access in a clean session)
 
 ## Demo
 
