@@ -59,6 +59,10 @@ Example:
 }
 ```
 
+## Demo
+
+See [`docs/demo-script.md`](docs/demo-script.md) for the official Node.js 18 EOL stale-claim walkthrough and judge-facing explanation.
+
 ## Important limitations
 
 - When Bifrost is configured, claim decomposition uses the selected model; without it or on extractor failure, the app falls back to sentence/line splitting.
