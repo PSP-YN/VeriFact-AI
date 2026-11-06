@@ -34,3 +34,9 @@ def test_verify_endpoint_with_mocked_external_services(monkeypatch):
     assert payload["claim_count"] == 1
     assert payload["claims"][0]["verdict"] == "supported"
     assert payload["claims"][0]["freshness_score"] == 90
+
+
+def test_verify_rejects_more_than_twelve_claims():
+    answer = " ".join(f"Claim {index}." for index in range(13))
+    response = client.post("/api/v1/verify", json={"answer": answer})
+    assert response.status_code == 413
