@@ -1,5 +1,9 @@
+from pathlib import Path
 import os
+
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
 
 from app.verify import extract_claims, initial_temporal_label, search_evidence
@@ -15,6 +19,11 @@ app = FastAPI(
 class VerifyRequest(BaseModel):
     answer: str = Field(min_length=1, max_length=20000)
     max_results_per_claim: int = Field(default=5, ge=1, le=10)
+
+
+@app.get("/")
+def root():
+    return RedirectResponse(url="/ui/")
 
 
 @app.get("/health")
@@ -35,7 +44,7 @@ async def verify_answer(request: VerifyRequest):
         raise HTTPException(status_code=422, detail="No verifiable claims found in answer")
 
     results = []
-    verified_count = 0
+    assessed_count = 0
     for index, claim in enumerate(claims, start=1):
         try:
             evidence = await search_evidence(claim, request.max_results_per_claim)
@@ -66,7 +75,7 @@ async def verify_answer(request: VerifyRequest):
                 "confidence_status": "not_assessed",
             }
         else:
-            verified_count += 1
+            assessed_count += 1
 
         results.append({
             "claim_id": f"claim-{index}",
@@ -79,7 +88,14 @@ async def verify_answer(request: VerifyRequest):
     return {
         "claims": results,
         "claim_count": len(results),
-        "verification_status": "model_assessed" if verified_count else "evidence_only",
-        "assessed_claim_count": verified_count,
+        "verification_status": "model_assessed" if assessed_count else "evidence_only",
+        "assessed_claim_count": assessed_count,
         "assessment_warning": "LLM verdicts and freshness scores are uncalibrated model assessments, not guarantees.",
     }
+
+
+app.mount(
+    "/ui",
+    StaticFiles(directory=Path(__file__).resolve().parent.parent / "static", html=True),
+    name="ui",
+)
