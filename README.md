@@ -4,6 +4,10 @@ A claim-level freshness and verification layer for AI-generated answers. It iden
 
 > Hackathon MVP in active development. Verdicts and model-generated freshness/confidence scores are uncalibrated assessments, not truth guarantees.
 
+## Architecture
+
+See [`docs/architecture.md`](docs/architecture.md) for the verification pipeline and evaluation flow.
+
 ## Current implementation
 
 - FastAPI backend and browser dashboard
