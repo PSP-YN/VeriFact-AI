@@ -1,6 +1,8 @@
 from fastapi.testclient import TestClient
+import pytest
 
 from app.main import app
+from app.evaluation import evaluate_verdicts
 
 client = TestClient(app)
 
@@ -62,3 +64,24 @@ def test_failed_bifrost_assessment_is_not_counted_as_assessed(monkeypatch):
     assert payload["verification_status"] == "evidence_only"
     assert payload["assessed_claim_count"] == 0
     assert payload["claims"][0]["verdict"] == "inconclusive"
+
+
+def test_evaluation_metrics_and_freshness_mae():
+    metrics = evaluate_verdicts(
+        ["supported", "contradicted", "inconclusive"],
+        ["supported", "supported", "inconclusive"],
+        expected_freshness=[80, None, 40],
+        predicted_freshness=[70, 90, 40],
+    )
+    assert metrics["sample_count"] == 3
+    assert metrics["accuracy"] == pytest.approx(2 / 3, abs=0.0001)
+    assert metrics["coverage"] == pytest.approx(2 / 3, abs=0.0001)
+    assert metrics["freshness_mae"] == 10
+    assert metrics["freshness_mae_sample_count"] == 2
+
+
+def test_evaluation_rejects_mismatched_and_empty_data():
+    with pytest.raises(ValueError):
+        evaluate_verdicts(["supported"], ["supported", "contradicted"])
+    with pytest.raises(ValueError):
+        evaluate_verdicts([], [])
