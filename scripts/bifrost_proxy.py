@@ -14,7 +14,9 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 TOKEN_FILE = Path.home() / ".config/verifact/bifrost_proxy_token"
+VK_FILE = Path.home() / ".config/verifact/bifrost_virtual_key"
 TOKEN = os.environ.get("BIFROST_PROXY_TOKEN") or TOKEN_FILE.read_text().strip()
+VIRTUAL_KEY = os.environ.get("BIFROST_VIRTUAL_KEY") or VK_FILE.read_text().strip()
 UPSTREAM = "http://127.0.0.1:8080/v1/chat/completions"
 MAX_BODY = 1_000_000
 
@@ -65,7 +67,7 @@ class Handler(BaseHTTPRequestHandler):
         if not isinstance(payload.get("messages"), list):
             self._send(400, b'{"error":"messages_required"}')
             return
-        request = Request(UPSTREAM, data=body, headers={"Content-Type": "application/json"}, method="POST")
+        request = Request(UPSTREAM, data=body, headers={"Content-Type": "application/json", "x-bf-vk": VIRTUAL_KEY}, method="POST")
         try:
             with urlopen(request, timeout=90) as response:
                 self._send(response.status, response.read(), response.headers.get("Content-Type", "application/json"))
@@ -82,4 +84,6 @@ class Handler(BaseHTTPRequestHandler):
 if __name__ == "__main__":
     if not TOKEN:
         raise SystemExit("BIFROST_PROXY_TOKEN is empty")
+    if not VIRTUAL_KEY:
+        raise SystemExit("BIFROST_VIRTUAL_KEY is empty")
     ThreadingHTTPServer(("127.0.0.1", 8081), Handler).serve_forever()

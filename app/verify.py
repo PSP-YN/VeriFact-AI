@@ -173,7 +173,8 @@ def initial_temporal_label(claim: str) -> str:
     """Heuristic prioritization only; not a truth verdict."""
     time_sensitive = re.search(
         r"\b(current|currently|latest|today|now|this year|price|pricing|version|release|"
-        r"regulation|law|policy|CEO|president|available|deadline|rate)\b",
+        r"regulation|law|policy|CEO|president|available|deadline|rate|support(?:ed|s)?|"
+        r"maintained|security updates?|security patches?|end[- ]of[- ]life|EOL)\b",
         claim,
         flags=re.IGNORECASE,
     )

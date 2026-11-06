@@ -12,3 +12,11 @@ def test_time_sensitive_claim_is_flagged():
 
 def test_unknown_temporal_sensitivity_is_not_misrepresented():
     assert initial_temporal_label("Water is composed of hydrogen and oxygen") == "temporal_sensitivity_unknown"
+
+
+def test_security_support_claim_is_time_sensitive():
+    assert initial_temporal_label("Node.js 18 receives security updates") == "time_sensitive"
+
+
+def test_end_of_life_claim_is_time_sensitive():
+    assert initial_temporal_label("Node.js 18 reached end of life") == "time_sensitive"

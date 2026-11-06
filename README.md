@@ -11,7 +11,7 @@ A claim-level freshness and verification layer for AI-generated answers. It iden
 - **API docs:** https://veri-fact-ai.vercel.app/docs
 - **OpenAPI:** https://veri-fact-ai.vercel.app/openapi.json
 
-The deployment responds, but external provider credentials must be configured in Vercel before live claim verification can work. Check the health response for `tavily_configured` and `bifrost_configured`; both should be `true` for the full demo.
+The hosted demo uses live Tavily evidence retrieval and a Bifrost model gateway on the project owner’s laptop through an authenticated Cloudflare Quick Tunnel. The laptop, Bifrost, proxy, and tunnel must remain online for model assessment. This is a temporary hackathon demo bridge, not an always-on production gateway. Check `/health` for provider configuration status.
 
 ## Architecture
 
@@ -62,8 +62,8 @@ GitHub Actions runs the test suite on pushes and pull requests to `main`.
 
 ```env
 TAVILY_API_KEY=your_tavily_key
-BIFROST_BASE_URL=http://localhost:8080
-BIFROST_API_KEY=your_bifrost_virtual_key_if_required
+BIFROST_BASE_URL=http://localhost:8081
+BIFROST_API_KEY=your_authenticated_proxy_bearer_token
 BIFROST_MODEL=provider/model-route
 ```
 
@@ -116,7 +116,7 @@ Set these values in Vercel Project Settings → Environment Variables. Never com
 
 - `TAVILY_API_KEY`: Tavily search key.
 - `BIFROST_BASE_URL`: reachable gateway URL. **Do not use localhost** for Vercel because it refers to the serverless runtime.
-- `BIFROST_API_KEY`: inference key if required by the gateway.
+- `BIFROST_API_KEY`: bearer token for the authenticated inference proxy (not the Gemini provider key).
 - `BIFROST_MODEL`: configured Bifrost model route.
 
 After setting or changing environment variables, redeploy and confirm `/health` reports both providers configured. Environment values are not shown by health endpoint.
