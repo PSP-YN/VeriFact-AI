@@ -84,10 +84,10 @@ async def assess_claim(claim: str, evidence: list[dict[str, Any]]) -> dict[str, 
         raise BifrostVerificationError("Bifrost verifier returned an unsupported verdict")
 
     freshness = result.get("freshness_score")
-    if freshness is not None and (not isinstance(freshness, (int, float)) or not 0 <= freshness <= 100):
+    if freshness is not None and (isinstance(freshness, bool) or not isinstance(freshness, (int, float)) or not 0 <= freshness <= 100):
         raise BifrostVerificationError("freshness_score must be 0-100 or null")
     confidence = result.get("confidence")
-    if confidence is not None and (not isinstance(confidence, (int, float)) or not 0 <= confidence <= 1):
+    if confidence is not None and (isinstance(confidence, bool) or not isinstance(confidence, (int, float)) or not 0 <= confidence <= 1):
         raise BifrostVerificationError("confidence must be 0-1 or null")
 
     return {
