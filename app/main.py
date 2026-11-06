@@ -60,9 +60,11 @@ async def verify_answer(request: VerifyRequest):
         except Exception as exc:
             raise HTTPException(status_code=502, detail=f"Evidence search failed: {type(exc).__name__}") from exc
 
+        assessment_failed = False
         try:
             assessment = await assess_claim(claim, evidence)
         except BifrostVerificationError as exc:
+            assessment_failed = True
             assessment = {
                 "verdict": "inconclusive",
                 "rationale": f"Verifier unavailable or invalid response: {exc}",
@@ -81,7 +83,7 @@ async def verify_answer(request: VerifyRequest):
                 "confidence": None,
                 "confidence_status": "not_assessed",
             }
-        else:
+        elif not assessment_failed:
             assessed_count += 1
 
         results.append({
