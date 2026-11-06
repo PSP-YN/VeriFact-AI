@@ -1,7 +1,7 @@
 from pathlib import Path
 import os
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
@@ -16,6 +16,20 @@ app = FastAPI(
     version="0.1.0",
     description="Claim-level freshness and evidence retrieval for AI answers",
 )
+
+
+@app.middleware("http")
+async def security_headers(request: Request, call_next):
+    """Apply baseline browser security headers and prevent caching sensitive API results."""
+    response = await call_next(request)
+    response.headers.setdefault("X-Content-Type-Options", "nosniff")
+    response.headers.setdefault("X-Frame-Options", "DENY")
+    response.headers.setdefault("Referrer-Policy", "strict-origin-when-cross-origin")
+    response.headers.setdefault("Permissions-Policy", "camera=(), microphone=(), geolocation=()")
+    response.headers.setdefault("Content-Security-Policy", "frame-ancestors 'none'")
+    if request.url.path.startswith("/api/"):
+        response.headers["Cache-Control"] = "no-store"
+    return response
 
 
 class VerifyRequest(BaseModel):
