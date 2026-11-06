@@ -1,6 +1,6 @@
 # VeriFact evaluation dataset
 
-This directory is for **human-labeled, source-backed evaluation records**. No benchmark examples or accuracy claims are included until the team has verified and labeled real cases.
+This directory is for **human-labeled, source-backed evaluation records**. `dataset.example.json` contains one real Node.js EOL example for exercising the evaluation pipeline; it is not a sufficiently large benchmark and must not be used to claim model accuracy.
 
 ## Dataset record format
 
