@@ -47,6 +47,10 @@ AI is used for claim extraction and evidence assessment. Tavily is used for live
 
 https://github.com/PSP-YN/VeriFact-AI
 
+## Hosted preview
+
+https://verifact-ai-pspyn.vercel.app (currently team SSO-protected; not yet a public judge link)
+
 ## Demo
 
 See [demo-script.md](demo-script.md) and the official Node.js EOL source-backed stale-claim example.
